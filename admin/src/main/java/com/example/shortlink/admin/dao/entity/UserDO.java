@@ -8,7 +8,7 @@ import java.util.Date;
 @TableName("t_user")
 @Data
 public class UserDO {
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.ASSIGN_ID)
     /**
      * ID
      */
