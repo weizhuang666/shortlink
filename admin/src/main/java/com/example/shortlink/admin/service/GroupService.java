@@ -2,6 +2,7 @@ package com.example.shortlink.admin.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.shortlink.admin.dao.entity.GroupDO;
+import com.example.shortlink.admin.dto.req.GruopUpdateReqDTO;
 import com.example.shortlink.admin.dto.resp.GroupRespDTO;
 
 import java.util.List;
@@ -22,4 +23,7 @@ public interface GroupService extends IService<GroupDO> {
      * @return 短链接用户分组集合
      */
     List<GroupRespDTO> listGroup();
+
+    void updateGruop(GruopUpdateReqDTO requestParam);
+
 }
