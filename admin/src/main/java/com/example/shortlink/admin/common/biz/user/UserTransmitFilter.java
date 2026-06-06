@@ -14,6 +14,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.util.Objects;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -28,15 +29,18 @@ public class UserTransmitFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
-        String userName = httpServletRequest.getHeader("username");
-        String token = httpServletRequest.getHeader("token");
-        if (userName == null || token == null) {
-            filterChain.doFilter(servletRequest, servletResponse);
-        }
-        Object userInfoJsonStr = stringRedisTemplate.opsForHash().get("login_" + userName, token);
-        if (userInfoJsonStr != null) {
-            UserInfoDTO userInfoDTO = JSON.parseObject(userInfoJsonStr.toString(), UserInfoDTO.class);
-            UserContext.setUser(userInfoDTO);
+        String requestURI = httpServletRequest.getRequestURI();
+        if (!Objects.equals(requestURI, "/api/short-link/v1/user/login")) {
+            String userName = httpServletRequest.getHeader("username");
+            String token = httpServletRequest.getHeader("token");
+            if (userName == null || token == null) {
+                filterChain.doFilter(servletRequest, servletResponse);
+            }
+            Object userInfoJsonStr = stringRedisTemplate.opsForHash().get("login_" + userName, token);
+            if (userInfoJsonStr != null) {
+                UserInfoDTO userInfoDTO = JSON.parseObject(userInfoJsonStr.toString(), UserInfoDTO.class);
+                UserContext.setUser(userInfoDTO);
+            }
         }
         try {
             filterChain.doFilter(servletRequest, servletResponse);
