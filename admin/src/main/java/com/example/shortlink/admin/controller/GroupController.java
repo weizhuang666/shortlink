@@ -38,11 +38,20 @@ public class GroupController {
     }
 
     /**
-     * 修改短链接分组名
+     * 修改短链接分组
      */
     @PutMapping("/api/short-link/v1/group")
     public Result<Void> updateGroup(@RequestBody GruopUpdateReqDTO requestParam) {
         groupService.updateGruop(requestParam);
+        return Results.success();
+    }
+
+    /**
+     * 删除短链接分组
+     */
+    @DeleteMapping("/api/short-link/v1/group")
+    public Result<Void> deleteGroup(@RequestParam String gid) {
+        groupService.deleteGruop(gid);
         return Results.success();
     }
 }

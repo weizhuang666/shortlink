@@ -24,6 +24,15 @@ public interface GroupService extends IService<GroupDO> {
      */
     List<GroupRespDTO> listGroup();
 
+    /**
+     * 修改短链接分组
+     * @param requestParam 修改短链接分组请求参数
+     */
     void updateGruop(GruopUpdateReqDTO requestParam);
 
+    /**
+     * 删除短链接分组
+     * @param gid
+     */
+    void deleteGruop(String gid);
 }
