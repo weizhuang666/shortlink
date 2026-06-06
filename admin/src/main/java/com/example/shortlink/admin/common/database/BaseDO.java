@@ -2,12 +2,14 @@ package com.example.shortlink.admin.common.database;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import lombok.Data;
 
 import java.util.Date;
 
 /**
  * 数据库持久层对象基础数据
  */
+@Data
 public class BaseDO {
 
     @TableField(fill = FieldFill.INSERT)
