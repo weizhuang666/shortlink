@@ -1,7 +1,9 @@
 package com.example.shortlink.admin.common.biz.user;
 
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson2.JSON;
+import com.example.shortlink.admin.common.convention.exception.ClientException;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -14,8 +16,10 @@ import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.util.List;
 import java.util.Objects;
 
+import static com.example.shortlink.admin.common.enums.UserErrorCodeEnum.USER_TOKEN_FAIL;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
@@ -26,18 +30,32 @@ public class UserTransmitFilter implements Filter {
 
     private final StringRedisTemplate stringRedisTemplate;
 
+    private static final List<String> IGNORE_URI = List.of(
+            "/api/short-link/v1/user/login",
+            "/api/short-link/admin/v1/user/has-username"
+    );
+
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         String requestURI = httpServletRequest.getRequestURI();
-        if (!Objects.equals(requestURI, "/api/short-link/v1/user/login")) {
-            String userName = httpServletRequest.getHeader("username");
-            String token = httpServletRequest.getHeader("token");
-            if (userName == null || token == null) {
-                filterChain.doFilter(servletRequest, servletResponse);
-            }
-            Object userInfoJsonStr = stringRedisTemplate.opsForHash().get("login_" + userName, token);
-            if (userInfoJsonStr != null) {
+        if (!IGNORE_URI.contains(requestURI)) {
+            String method = httpServletRequest.getMethod();
+            if (Objects.equals(requestURI, "/api/short-link/admin/v1/user") && Objects.equals(method, "POST")) {
+                String userName = httpServletRequest.getHeader("username");
+                String token = httpServletRequest.getHeader("token");
+                if (!StrUtil.isAllNotBlank(token, userName)) {
+                    throw new ClientException(USER_TOKEN_FAIL);
+                }
+                Object userInfoJsonStr;
+                try {
+                    userInfoJsonStr = stringRedisTemplate.opsForHash().get("login_" + userName, token);
+                    if (userInfoJsonStr == null) {
+                        throw new ClientException(USER_TOKEN_FAIL);
+                    }
+                } catch (Exception ex) {
+                    throw new ClientException(USER_TOKEN_FAIL);
+                }
                 UserInfoDTO userInfoDTO = JSON.parseObject(userInfoJsonStr.toString(), UserInfoDTO.class);
                 UserContext.setUser(userInfoDTO);
             }
