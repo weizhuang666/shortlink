@@ -3,10 +3,10 @@ package com.example.shortlink.admin.dto.req;
 import lombok.Data;
 
 @Data
-public class GruopUpdateReqDTO {
+public class GroupSortReqDTO {
 
     private String gid;
 
-    private String name;
+    private Integer sortOrder;
 
 }
