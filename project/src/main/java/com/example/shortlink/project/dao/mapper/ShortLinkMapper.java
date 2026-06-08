@@ -2,9 +2,17 @@ package com.example.shortlink.project.dao.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.shortlink.project.dao.entity.ShortLinkDO;
+import org.apache.ibatis.annotations.Param;
+
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * 短链接持久层
  */
 public interface ShortLinkMapper extends BaseMapper<ShortLinkDO> {
+
+    List<Map<String, Object>> listGroupShortLinkCount(@Param("requestParam") List<String> requestParam);
+
 }

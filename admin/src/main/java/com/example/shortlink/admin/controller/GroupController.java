@@ -6,6 +6,7 @@ import com.example.shortlink.admin.dto.req.GroupSaveReqDTO;
 import com.example.shortlink.admin.dto.req.GroupSortReqDTO;
 import com.example.shortlink.admin.dto.req.GroupUpdateReqDTO;
 import com.example.shortlink.admin.dto.resp.GroupRespDTO;
+import com.example.shortlink.admin.remote.ShortLinkRemoteService;
 import com.example.shortlink.admin.service.GroupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 public class GroupController {
+
     private final GroupService groupService;
 
     /**
