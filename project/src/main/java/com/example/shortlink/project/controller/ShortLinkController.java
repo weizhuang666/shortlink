@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -28,12 +27,18 @@ public class ShortLinkController {
 
     private final ShortLinkService shortLinkService;
 
+    /**
+     * 短链接跳转原始链接
+     */
     @SneakyThrows
     @GetMapping("/{short-uri}")
     public void restoreUrl(@PathVariable("short-uri") String shortUri, HttpServletRequest request, HttpServletResponse response) {
         shortLinkService.restoreUrl(shortUri, request, response);
     }
 
+    /**
+     * 修改短链接
+     */
     @PostMapping("/api/short-link/v1/update")
     public Result<Void> updateShortLink(ShortLinkUpdateReqDTO requestParam) {
         shortLinkService.updateShortLink(requestParam);
