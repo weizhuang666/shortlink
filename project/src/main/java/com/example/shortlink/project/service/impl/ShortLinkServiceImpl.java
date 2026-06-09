@@ -87,6 +87,11 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                 .build();
     }
 
+    /**
+     * 分页查询短链接
+     * @param requestParam
+     * @return
+     */
     @Override
     public IPage<ShortLinkPageRespDTO> pageShortLink(ShortLinkPageReqDTO requestParam) {
         LambdaQueryWrapper<ShortLinkDO> queryWrapper = Wrappers.lambdaQuery(ShortLinkDO.class)
@@ -94,7 +99,12 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                 .eq(ShortLinkDO::getEnableStatus, 0)
                 .eq(ShortLinkDO::getDelFlag, 0);
         IPage<ShortLinkDO> resultPage = baseMapper.selectPage(requestParam, queryWrapper);
-        return resultPage.convert(each -> BeanUtil.toBean(each, ShortLinkPageRespDTO.class));
+        return resultPage.convert(each ->
+        {
+            ShortLinkPageRespDTO result = BeanUtil.toBean(each, ShortLinkPageRespDTO.class);
+            result.setDomain("http://" + result.getDomain());
+            return result;
+        });
     }
 
     @Override
