@@ -15,14 +15,8 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.shortlink.project.common.convention.exception.ClientException;
 import com.example.shortlink.project.common.convention.exception.ServiceException;
-import com.example.shortlink.project.dao.entity.LinkAccessStatsDO;
-import com.example.shortlink.project.dao.entity.LinkLocaleStatsDO;
-import com.example.shortlink.project.dao.entity.ShortLinkDO;
-import com.example.shortlink.project.dao.entity.ShortLinkGotoDO;
-import com.example.shortlink.project.dao.mapper.LinkAccessStatsMapper;
-import com.example.shortlink.project.dao.mapper.LinkLocaleStatsMapper;
-import com.example.shortlink.project.dao.mapper.ShortLinkGotoMapper;
-import com.example.shortlink.project.dao.mapper.ShortLinkMapper;
+import com.example.shortlink.project.dao.entity.*;
+import com.example.shortlink.project.dao.mapper.*;
 import com.example.shortlink.project.dto.req.ShortLinkCreateReqDTO;
 import com.example.shortlink.project.dto.req.ShortLinkPageReqDTO;
 import com.example.shortlink.project.dto.req.ShortLinkUpdateReqDTO;
@@ -73,6 +67,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
     private final RedissonClient redissonClient;
     private final LinkAccessStatsMapper linkAccessStatsMapper;
     private final LinkLocaleStatsMapper linkLocaleStatsMapper;
+    private final LinkOsStatsMapper linkOsStatsMapper;
     @Value("${short-link.stats.locale.amap-key}")
     private String statsLocaleAmapKey;
 
@@ -283,6 +278,14 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                         .country("中国")
                         .build();
                 linkLocaleStatsMapper.shortLinkLocaleStats(linkLocaleStatsDO);
+                LinkOsStatsDO linkOsStatsDO = LinkOsStatsDO.builder()
+                        .gid(gid)
+                        .fullShortUrl(fullShortUrl)
+                        .cnt(1)
+                        .date(new Date())
+                        .os(LinkUtil.getOs(request))
+                        .build();
+                linkOsStatsMapper.shortLinkOsStats(linkOsStatsDO);
             }
         } catch (Throwable ex) {
             log.error("短链接访问量统计异常", ex);
