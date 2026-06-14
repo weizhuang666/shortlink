@@ -2,7 +2,11 @@ package com.example.shortlink.project.dao.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.shortlink.project.dao.entity.LinkLocaleStatsDO;
+import com.example.shortlink.project.dto.req.ShortLinkStatsReqDTO;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 /**
  * 地区统计访问持久层
@@ -14,4 +18,22 @@ public interface LinkLocaleStatsMapper extends BaseMapper<LinkLocaleStatsDO> {
      */
     void shortLinkLocaleStats(@Param("LinkLocaleStats") LinkLocaleStatsDO linkLocaleStatsDO);
 
+    /**
+     * 根据短链接获取指定日期内地区监控数据
+     */
+    @Select("SELECT " +
+            "    tlls.province, " +
+            "    SUM(tlls.cnt) AS cnt " +
+            "FROM " +
+            "    t_link tl INNER JOIN " +
+            "    t_link_locale_stats tlls ON tl.full_short_url = tlls.full_short_url " +
+            "WHERE " +
+            "    tlls.full_short_url = #{param.fullShortUrl} " +
+            "    AND tl.gid = #{param.gid} " +
+            "    AND tl.del_flag = '0' " +
+            "    AND tl.enable_status = #{param.enableStatus} " +
+            "    AND tlls.date BETWEEN #{param.startDate} and #{param.endDate} " +
+            "GROUP BY " +
+            "    tlls.full_short_url, tl.gid, tlls.province;")
+    List<LinkLocaleStatsDO> listLocaleByShortLink(@Param("param") ShortLinkStatsReqDTO requestParam);
 }
