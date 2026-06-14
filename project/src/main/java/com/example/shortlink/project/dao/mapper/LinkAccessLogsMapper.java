@@ -32,7 +32,7 @@ public interface LinkAccessLogsMapper extends BaseMapper<LinkAccessLogsDO> {
             "ORDER BY " +
             "    count DESC " +
             "LIMIT 5;")
-    List<HashMap<String, Object>> listTopIpByShortLink(ShortLinkStatsReqDTO requestParam);
+    List<HashMap<String, Object>> listTopIpByShortLink(@Param("param") ShortLinkStatsReqDTO requestParam);
 
     /**
      * 根据短链接获取指定日期内新旧访客数据
