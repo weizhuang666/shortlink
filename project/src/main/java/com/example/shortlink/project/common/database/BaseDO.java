@@ -12,6 +12,9 @@ import java.util.Date;
 @Data
 public class BaseDO {
 
+    /**
+     * 创建时间
+     */
     @TableField(fill = FieldFill.INSERT)
     private Date createTime;
 

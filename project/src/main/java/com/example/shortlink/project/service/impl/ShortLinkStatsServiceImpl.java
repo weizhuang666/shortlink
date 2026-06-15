@@ -3,11 +3,13 @@ package com.example.shortlink.project.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateUtil;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.shortlink.project.dao.entity.LinkAccessStatsDO;
 import com.example.shortlink.project.dao.entity.LinkDeviceStatsDO;
 import com.example.shortlink.project.dao.entity.LinkLocaleStatsDO;
 import com.example.shortlink.project.dao.entity.LinkNetworkStatsDO;
 import com.example.shortlink.project.dao.mapper.*;
+import com.example.shortlink.project.dto.req.ShortLinkStatsAccessRecordReqDTO;
 import com.example.shortlink.project.dto.req.ShortLinkStatsReqDTO;
 import com.example.shortlink.project.dto.resp.*;
 import com.example.shortlink.project.service.ShortLinkStatsService;
@@ -219,6 +221,11 @@ public class ShortLinkStatsServiceImpl implements ShortLinkStatsService {
                 .deviceStats(deviceStats)
                 .networkStats(networkStats)
                 .build();
+    }
+
+    @Override
+    public IPage<ShortLinkStatsAccessRecordRespDTO> shortLinkStatsAccessRecord(ShortLinkStatsAccessRecordReqDTO requestParam) {
+        return null;
     }
 
 }
