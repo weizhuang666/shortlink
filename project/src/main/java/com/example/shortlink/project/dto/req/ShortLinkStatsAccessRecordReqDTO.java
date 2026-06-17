@@ -1,9 +1,11 @@
 package com.example.shortlink.project.dto.req;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.shortlink.project.dao.entity.LinkAccessLogsDO;
 import lombok.Data;
 
 @Data
-public class ShortLinkStatsAccessRecordReqDTO {
+public class ShortLinkStatsAccessRecordReqDTO extends Page<LinkAccessLogsDO> {
 
     /**
      * 完整短链接

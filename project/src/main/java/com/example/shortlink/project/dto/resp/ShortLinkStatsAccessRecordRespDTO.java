@@ -1,10 +1,6 @@
 package com.example.shortlink.project.dto.resp;
 
-import com.alibaba.fastjson2.annotation.JSONField;
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.example.shortlink.project.dao.entity.LinkAccessLogsDO;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +13,7 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ShortLinkStatsAccessRecordRespDTO extends Page<LinkAccessLogsDO> {
+public class ShortLinkStatsAccessRecordRespDTO {
 
     /**
      * 访客类型
@@ -53,6 +49,11 @@ public class ShortLinkStatsAccessRecordRespDTO extends Page<LinkAccessLogsDO> {
      * 地区
      */
     private String locale;
+
+    /**
+     * 用户标识
+     */
+    private String user;
 
     /**
      * 访问时间
