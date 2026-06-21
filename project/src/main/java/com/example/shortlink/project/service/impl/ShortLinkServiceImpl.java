@@ -90,6 +90,9 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                 .gid(requestParam.getGid())
                 .shortUri(shortLinkSuffix)
                 .fullShortUrl(fullShortUrl)
+                .totalPv(0)
+                .totalUv(0)
+                .totalUip(0)
                 .createdType(requestParam.getCreatedType())
                 .validDateType(requestParam.getValidDateType())
                 .validDate(requestParam.getValidDate())
@@ -223,7 +226,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                 uv.set(UUID.randomUUID().toString());
                 Cookie uvCookie = new Cookie("uv", uv.get());
                 uvCookie.setMaxAge(24 * 60 * 60 * 30);
-                // 一个fullShortUrl对应一个Cookie，如果不设置Path，每个不同URL的Cookie都会传进来
+                // 一个fullShortUrl对应一个Cookie，如果不设置Path，每个不同短链接的Cookie都会传进来
                 uvCookie.setPath(StrUtil.sub(fullShortUrl, fullShortUrl.indexOf("/"), fullShortUrl.length()));
                 response.addCookie(uvCookie);
                 Long uvAdded = stringRedisTemplate.opsForSet().add("short-link:stats:uv:" + fullShortUrl, uv.get());
@@ -335,6 +338,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                         .browser(browser)
                         .build();
                 linkAccessLogsMapper.insert(linkAccessLogsDO);
+                baseMapper.incrementStats(gid, fullShortUrl, 1, uvFirstFlag.get() ? 1 : 0, uipFirstFlag ? 1 : 0);
             }
         } catch (Throwable ex) {
             log.error("短链接访问量统计异常", ex);
