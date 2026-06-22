@@ -1,8 +1,10 @@
 package com.example.shortlink.project.dao.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.shortlink.project.dao.entity.LinkAccessLogsDO;
 import com.example.shortlink.project.dao.entity.LinkAccessStatsDO;
+import com.example.shortlink.project.dto.req.ShortLinkGroupStatsAccessRecordReqDTO;
 import com.example.shortlink.project.dto.req.ShortLinkGroupStatsReqDTO;
 import com.example.shortlink.project.dto.req.ShortLinkStatsReqDTO;
 import org.apache.ibatis.annotations.Param;
@@ -143,4 +145,47 @@ public interface LinkAccessLogsMapper extends BaseMapper<LinkAccessLogsDO> {
             "    count DESC " +
             "LIMIT 5;")
     List<HashMap<String, Object>> listTopIpByGroup(@Param("param")ShortLinkGroupStatsReqDTO requestParam);
+
+    @Select("SELECT " +
+            "    tlal.* " +
+            "FROM " +
+            "    t_link tl " +
+            "    INNER JOIN t_link_access_logs tlal ON tl.full_short_url = tlal.full_short_url " +
+            "WHERE " +
+            "    tl.gid = #{param.gid} " +
+            "    AND tl.del_flag = '0' " +
+            "    AND tl.enable_status = '0' " +
+            "    AND tlal.create_time BETWEEN #{param.startDate} and #{param.endDate} " +
+            "ORDER BY " +
+            "    tlal.create_time DESC")
+    IPage<LinkAccessLogsDO> selectGroupPage(@Param("param")ShortLinkGroupStatsAccessRecordReqDTO requestParam);
+
+    /**
+     * 获取分组用户信息是否新老访客
+     */
+    @Select("<script> " +
+            "SELECT " +
+            "    tlal.user, " +
+            "    CASE " +
+            "        WHEN MIN(tlal.create_time) BETWEEN #{startDate} AND #{endDate} THEN '新访客' " +
+            "        ELSE '老访客' " +
+            "    END AS uvType " +
+            "FROM " +
+            "    t_link tl INNER JOIN " +
+            "    t_link_access_logs tlal ON tl.full_short_url = tlal.full_short_url " +
+            "WHERE " +
+            "    tl.gid = #{gid} " +
+            "    AND tl.del_flag = '0' " +
+            "    AND tl.enable_status = '0' " +
+            "    AND tlal.user IN " +
+            "    <foreach item='item' index='index' collection='userAccessLogsList' open='(' separator=',' close=')'> " +
+            "        #{item} " +
+            "    </foreach> " +
+            "GROUP BY " +
+            "    tlal.user;" +
+            "</script>")
+    List<Map<String, Object>> selectGroupUvTypeByUsers(@Param("gid") String gid,
+                                                       @Param("startDate") String startDate,
+                                                       @Param("endDate") String endDate,
+                                                       @Param("userAccessLogsList") List<String> userAccessLogsList);
 }
