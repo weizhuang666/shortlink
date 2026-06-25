@@ -483,7 +483,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
             // 根据原始Url生成shortUri
             shortUri = HashUtil.hashToBase62(originUrl);
             // 判断短链接Url是否重复
-            if (!shortUriCreateCachePenetrationBloomFilter.contains(requestParam.getDomain() + "/" + shortUri)) {
+            if (!shortUriCreateCachePenetrationBloomFilter.contains(createShortLinkDefaultDomain + "/" + shortUri)) {
                 break;
             }
             customGenerateCount++;
