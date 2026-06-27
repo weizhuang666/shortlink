@@ -3,10 +3,11 @@ package com.example.shortlink.admin.dto.resp;
 import lombok.Data;
 
 /**
- * 短链接分组返回实体
+ * 短链接分组返回实体对象
  */
 @Data
-public class GroupRespDTO {
+public class ShortLinkGroupRespDTO {
+
     /**
      * 分组标识
      */

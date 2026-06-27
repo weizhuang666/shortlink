@@ -13,9 +13,9 @@ import com.example.shortlink.admin.dao.entity.GroupDO;
 import com.example.shortlink.admin.dao.mapper.GroupMapper;
 import com.example.shortlink.admin.dto.req.GroupSortReqDTO;
 import com.example.shortlink.admin.dto.req.GroupUpdateReqDTO;
-import com.example.shortlink.admin.dto.resp.GroupRespDTO;
-import com.example.shortlink.admin.remote.ShortLinkRemoteService;
-import com.example.shortlink.admin.remote.dto.resp.ShortLinkCountQueryRespDTO;
+import com.example.shortlink.admin.dto.resp.ShortLinkGroupRespDTO;
+import com.example.shortlink.admin.remote.ShortLinkActualRemoteService;
+import com.example.shortlink.admin.remote.dto.resp.ShortLinkGroupCountQueryRespDTO;
 import com.example.shortlink.admin.service.GroupService;
 import com.example.shortlink.admin.toolkit.RandomGenerator;
 import groovy.util.logging.Slf4j;
@@ -44,8 +44,7 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
     @Value("${short-link.group.max-num}")
     private Integer groupMaxNum;
 
-    ShortLinkRemoteService shortLinkRemoteService = new ShortLinkRemoteService() {
-    };
+    private final ShortLinkActualRemoteService shortLinkActualRemoteService;
 
     @Override
     public void saveGroup(String groupName) {
@@ -82,19 +81,20 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
     }
 
     @Override
-    public List<GroupRespDTO> listGroup() {
+    public List<ShortLinkGroupRespDTO> listGroup() {
         LambdaQueryWrapper<GroupDO> queryWrapper = Wrappers.lambdaQuery(GroupDO.class)
                 .eq(GroupDO::getDelFlag, 0)
                 .eq(GroupDO::getUsername, UserContext.getUsername())
                 .orderByDesc(GroupDO::getSortOrder, GroupDO::getUpdateTime);
-        List<GroupDO> list = baseMapper.selectList(queryWrapper);
-        Result<List<ShortLinkCountQueryRespDTO>> listResult = shortLinkRemoteService.listGroupShortLinkCount(list.stream().map(GroupDO::getGid).toList());
-        List<GroupRespDTO> shortLinkGroupRespDTOList = BeanUtil.copyToList(list, GroupRespDTO.class);
+        List<GroupDO> groupDOList = baseMapper.selectList(queryWrapper);
+        Result<List<ShortLinkGroupCountQueryRespDTO>> listResult = shortLinkActualRemoteService
+                .listGroupShortLinkCount(groupDOList.stream().map(GroupDO::getGid).toList());
+        List<ShortLinkGroupRespDTO> shortLinkGroupRespDTOList = BeanUtil.copyToList(groupDOList, ShortLinkGroupRespDTO.class);
         shortLinkGroupRespDTOList.forEach(each -> {
-            Optional<ShortLinkCountQueryRespDTO> first = listResult.getData().stream()
+            Optional<ShortLinkGroupCountQueryRespDTO> first = listResult.getData().stream()
                     .filter(item -> Objects.equals(item.getGid(), each.getGid()))
                     .findFirst();
-            first.ifPresent(item -> each.setShortLinkCount(item.getShortLinkCount()));
+            first.ifPresent(item -> each.setShortLinkCount(first.get().getShortLinkCount()));
         });
         return shortLinkGroupRespDTOList;
     }

@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.shortlink.admin.dao.entity.GroupDO;
 import com.example.shortlink.admin.dto.req.GroupSortReqDTO;
 import com.example.shortlink.admin.dto.req.GroupUpdateReqDTO;
-import com.example.shortlink.admin.dto.resp.GroupRespDTO;
+import com.example.shortlink.admin.dto.resp.ShortLinkGroupRespDTO;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ public interface GroupService extends IService<GroupDO> {
      * 查询用户短链接分组集合
      * @return 短链接用户分组集合
      */
-    List<GroupRespDTO> listGroup();
+    List<ShortLinkGroupRespDTO> listGroup();
 
     /**
      * 修改短链接分组

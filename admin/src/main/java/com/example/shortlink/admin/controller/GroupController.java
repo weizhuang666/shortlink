@@ -5,8 +5,7 @@ import com.example.shortlink.admin.common.convention.result.Results;
 import com.example.shortlink.admin.dto.req.GroupSaveReqDTO;
 import com.example.shortlink.admin.dto.req.GroupSortReqDTO;
 import com.example.shortlink.admin.dto.req.GroupUpdateReqDTO;
-import com.example.shortlink.admin.dto.resp.GroupRespDTO;
-import com.example.shortlink.admin.remote.ShortLinkRemoteService;
+import com.example.shortlink.admin.dto.resp.ShortLinkGroupRespDTO;
 import com.example.shortlink.admin.service.GroupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +35,7 @@ public class GroupController {
      * @return
      */
     @GetMapping("/api/short-link/admin/v1/group")
-    public Result<List<GroupRespDTO>> listGroup() {
+    public Result<List<ShortLinkGroupRespDTO>> listGroup() {
         return Results.success(groupService.listGroup());
     }
 
