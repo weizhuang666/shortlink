@@ -55,4 +55,6 @@ public interface LinkLocaleStatsMapper extends BaseMapper<LinkLocaleStatsDO> {
             "GROUP BY " +
             "    tl.gid, tlls.province;")
     List<LinkLocaleStatsDO> listLocaleByGroup(@Param("param")ShortLinkGroupStatsReqDTO requestParam);
+
+
 }
