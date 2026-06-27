@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import java.util.concurrent.TimeUnit;
 
 import static com.example.shortlink.admin.common.constant.RedisCacheConstant.LOCK_USER_REGISTER_KEY;
+import static com.example.shortlink.admin.common.constant.RedisCacheConstant.USER_LOGIN_KEY;
 import static com.example.shortlink.admin.common.enums.UserErrorCodeEnum.*;
 
 
@@ -109,7 +110,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
                 .eq(UserDO::getPassword, requestParam.getPassword())
                 .eq(UserDO::getDelFlag, 0);
         UserDO userDO = baseMapper.selectOne(queryWrapper);
-        Boolean hasKey = stringRedisTemplate.hasKey("login_" + requestParam.getUsername());
+        Boolean hasKey = stringRedisTemplate.hasKey(USER_LOGIN_KEY + requestParam.getUsername());
         if (hasKey != null && hasKey) {
             throw new ClientException("用户已登录");
         }
@@ -117,20 +118,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
             throw new ClientException("用户不存在");
         }
         String uuid = UUID.randomUUID().toString();
-        stringRedisTemplate.opsForHash().put("login_" + requestParam.getUsername(), uuid, JSON.toJSONString(userDO));
-        stringRedisTemplate.expire("login_" + requestParam.getUsername(), 30L, TimeUnit.DAYS);
+        stringRedisTemplate.opsForHash().put(USER_LOGIN_KEY + requestParam.getUsername(), uuid, JSON.toJSONString(userDO));
+        stringRedisTemplate.expire(USER_LOGIN_KEY + requestParam.getUsername(), 30L, TimeUnit.DAYS);
         return new UserLoginRespDTO(uuid);
     }
 
     @Override
     public Boolean checkLogin(String username, String token) {
-        return stringRedisTemplate.opsForHash().get("login_" + username, token) != null;
+        return stringRedisTemplate.opsForHash().get(USER_LOGIN_KEY + username, token) != null;
     }
 
     @Override
     public void logout(String username, String token) {
         if (checkLogin(username, token)) {
-            stringRedisTemplate.opsForHash().delete("login_" + username);
+            stringRedisTemplate.opsForHash().delete(USER_LOGIN_KEY + username);
         }
         throw new ClientException("用户Token不存在或用户未登录");
     }
